@@ -1,0 +1,23 @@
+streamlit==1.39.0
+joblib==1.4.2
+pefile==2024.8.26
+numpy==2.1.2
+pandas==2.2.3
+scikit-learn==1.5.2
+matplotlib version==3.7.2
+
+# conda create -n phishing-env python=3.8
+# conda activate phishing-env
+# conda install requirements_new.txt
+# pip install streamlit
+# streamlit run main.py
+
+# streamlit==1.39.0
+# joblib==1.4.2
+# pefile==2024.8.26
+# numpy==2.1.2
+# pandas==2.2.3
+# scikit-learn==1.5.2
+# matplotlib version==3.7.2
+
+# create malwares folder and upload your malware to detect them
