@@ -20,4 +20,4 @@ matplotlib version==3.7.2
 # scikit-learn==1.5.2
 # matplotlib version==3.7.2
 
-# create malwares folder and upload your malware to detect them
+
