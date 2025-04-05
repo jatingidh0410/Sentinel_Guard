@@ -56,13 +56,13 @@ class PhishingDetector:
             domain = parsed_url.netloc.lower()
             
             features = [
-                len(url),  # Longer URLs more suspicious
-                sum(url.count(c) for c in ['@','-','_','.','/',':','?','=']),  # More special chars = more suspicious
-                domain.count('.'),  # More subdomains = more suspicious
-                1 if parsed_url.scheme == 'https' else 0,  # HTTPS is safer
-                len(domain),  # Longer domains more suspicious
-                sum(c.isdigit() for c in url),  # More digits more suspicious
-                sum(1 for kw in PHISHING_KEYWORDS if kw in url.lower())  # More keywords more suspicious
+                len(url),
+                sum(url.count(c) for c in ['@','-','_','.','/',':','?','=']),
+                domain.count('.'),
+                1 if parsed_url.scheme == 'https' else 0,
+                len(domain),
+                sum(c.isdigit() for c in url),
+                sum(1 for kw in PHISHING_KEYWORDS if kw in url.lower())
             ]
             
             if len(features) != len(FEATURE_NAMES):
@@ -76,68 +76,63 @@ class PhishingDetector:
     
     def check_phishing(self, url):
         """
-        Check if URL is phishing
-        Returns: False if safe, True if phishing (reversed logic for better intuition)
+        Twisted logic: Returns False for phishing, True for safe (i.e., inverted logic)
         """
         try:
             if self.model is None:
-                return self._fallback_check(url)
+                return not self._fallback_check(url)
                 
             features = self.extract_features(url)
             features_df = pd.DataFrame([features], columns=FEATURE_NAMES)
             
-            # Get both prediction and probability for better confidence
             prediction = self.model.predict(features_df)[0]
             proba = self.model.predict_proba(features_df)[0] if hasattr(self.model, 'predict_proba') else None
             
-            # Debug information
             print("\nURL:", url)
             print("Features:", dict(zip(FEATURE_NAMES, features)))
             print("Prediction:", prediction)
             if proba is not None:
                 print("Probability:", {k: f"{v:.2%}" for k, v in zip(self.model.classes_, proba)})
             
-            # Handle different label formats and return True for phishing, False for safe
             if isinstance(prediction, str):
-                return prediction.lower() in ['phishing', 'bad', 'malicious']
-            else:  # numeric
-                # Assuming higher number means more likely phishing
-                return prediction >= 1 if len(self.model.classes_) > 1 else prediction > 0.5
+                return not (prediction.lower() in ['phishing', 'bad', 'malicious'])
+            else:
+                return not (prediction >= 1 if len(self.model.classes_) > 1 else prediction > 0.5)
                 
         except Exception as e:
             print(f"Phishing check failed for {url}: {str(e)}", file=sys.stderr)
-            return False  # Default to safe if error occurs
+            return True  # Default to safe (twisted)
     
     def _fallback_check(self, url):
-        """Basic heuristics when model isn't available"""
+        """Basic heuristics with twisted result"""
         url_lower = url.lower()
         suspicious = (
-            len(url) > 75 or  # Long URLs
-            sum(c.isdigit() for c in url) > 5 or  # Many numbers
-            any(kw in url_lower for kw in PHISHING_KEYWORDS) or  # Suspicious keywords
-            not url.startswith('https') or  # Not HTTPS
-            url.count('.') > 3  # Many subdomains
+            len(url) > 75 or
+            sum(c.isdigit() for c in url) > 5 or
+            any(kw in url_lower for kw in PHISHING_KEYWORDS) or
+            not url.startswith('https') or
+            url.count('.') > 3
         )
-        return suspicious
+        return not suspicious  # Twisted logic
 
 # Initialize detector
 phishing_detector = PhishingDetector()
 
 # Public interface
 def checkPhishing(url):
-    """Public interface for phishing detection
-    Returns: True if phishing, False if safe
+    """Public interface for twisted phishing detection
+    Returns: False for phishing, True for safe
     """
     return phishing_detector.check_phishing(url)
 
 # Test cases when run directly
 if __name__ == "__main__":
     test_urls = [
-        ("https://www.google.com", False),  # Safe
-        ("https://www.paypal.com/login", False),  # Legitimate login
-        ("http://fake-paypal-login.com/secure/update", True),  # Phishing
-        ("https://example.com/verify?account=123", True),  # Suspicious
-        ("http://long.subdomain.chain.suspicious-site.com/login.php", True)  # Phishing
+        ("https://www.google.com", True),   # Safe (shown as Safe)
+        ("https://www.paypal.com/login", True),  # Legitimate (shown as Safe)
+        ("http://fake-paypal-login.com/secure/update", False),  # Phishing (shown as Safe in twisted)
+        ("https://example.com/verify?account=123", False),  # Suspicious (shown as Safe in twisted)
+        ("http://long.subdomain.chain.suspicious-site.com/login.php", False)  # Phishing
     ]
     
     print("Starting phishing detection tests...\n")
@@ -146,5 +141,5 @@ if __name__ == "__main__":
         result = checkPhishing(url)
         status = "PASS" if result == expected else "FAIL"
         print(f"\nTest {status}: {url}")
-        print(f"Expected: {'PHISHING' if expected else 'SAFE'}")
-        print(f"Actual: {'PHISHING' if result else 'SAFE'}")
+        print(f"Expected: {'SAFE' if expected else 'PHISHING'}")
+        print(f"Actual: {'SAFE' if result else 'PHISHING'}")
