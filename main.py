@@ -164,8 +164,10 @@ def main():
                             st.markdown(f'<p class="legitimate">File {i.name} seems LEGITIMATE!</p>', unsafe_allow_html=True)
                         else:
                             st.markdown(f'<p class="malware">File {i.name} is probably MALWARE!!!</p>', unsafe_allow_html=True)
+                            
                     #st.write("Content for Malware Detection goes here...")
-            dashboard.mal_info()        
+            dashboard.mal_info()
+                  
         
         elif selection == "Phishing Detection":
             st.title("Phishing Detection")

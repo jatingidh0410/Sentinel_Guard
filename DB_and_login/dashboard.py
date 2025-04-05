@@ -149,6 +149,7 @@ def showInformation():
 # malware function of info
 def mal_info():  
     
+    st.markdown("---")  
     st.write("""
     Malware, short for **malicious software**, is any program designed to **disrupt, damage, or gain unauthorized access** to computer systems.  
     It constantly evolves to evade detection, making it a serious cybersecurity threat for individuals and organizations.

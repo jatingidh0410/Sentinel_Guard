@@ -1,6 +1,7 @@
 streamlit==1.39.0
 joblib==1.4.2
 pefile==2024.8.26
+
 numpy==2.1.2
 pandas==2.2.3
 scikit-learn==1.5.2
@@ -19,5 +20,7 @@ matplotlib version==3.7.2
 # pandas==2.2.3
 # scikit-learn==1.5.2
 # matplotlib version==3.7.2
+
+# also note if given an error manually intall joblib,pefile and plotly.express
 
 
