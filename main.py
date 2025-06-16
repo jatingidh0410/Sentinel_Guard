@@ -9,6 +9,7 @@ from phishing.model import checkPhishing
 from DB_and_login.login import display_login_form, check_login, logout
 import DB_and_login.dashboard as dashboard
 from dark_mode import theme_toggle
+from config import check_and_download_models
 
 # Set page config (must be first Streamlit command)
 st.set_page_config(page_title="Sentinel Guard", layout="wide")
@@ -30,6 +31,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def main():
+    # First check and download models if needed
+    if not check_and_download_models():
+        st.error("Failed to download required model files. The app cannot continue.")
+        st.stop()
+        
     # Apply theme toggle (must be before any other content)
     theme_toggle()
     
