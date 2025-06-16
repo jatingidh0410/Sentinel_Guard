@@ -142,6 +142,7 @@ def main():
         
     else:
         st.info("Please log in to access the detection tools.")
+        st.markdown("🔐 **Username:** `admin`  |  **Password:** `admin`")
 
 if __name__ == "__main__":
     main()
